@@ -13,8 +13,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ]
+  "packageManager": "pnpm@10.33.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  }
 }
