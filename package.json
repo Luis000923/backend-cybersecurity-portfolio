@@ -4,11 +4,11 @@
   "private": true,
   "description": "Monorepo de portafolio con Astro y Express",
   "scripts": {
-    "dev": "npm run dev --prefix frontend & npm run dev --prefix backend",
-    "dev:frontend": "npm run dev --prefix frontend",
-    "dev:backend": "npm run dev --prefix backend",
-    "build": "npm run build --prefix frontend && npm run build --prefix backend",
-    "start": "npm run start --prefix backend"
+    "dev": "pnpm --filter frontend dev & pnpm --filter backend dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend": "pnpm --filter backend dev",
+    "build": "pnpm --filter frontend build && rm -rf dist && cp -r frontend/dist ./dist && pnpm --filter backend build",
+    "start": "pnpm --filter backend start"
   },
   "keywords": [],
   "author": "",
