@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Si el archivo o directorio existe, servirlo directamente
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # Si no existe, intentar servir index.html (para routing de Astro/SPA)
+  # Opcional: Si usas trailingSlash: 'always', Astro genera carpetas/index.html
+  # por lo que Apache debería encontrar el archivo automáticamente si DirectoryIndex está activo.
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Desactivar el listado de directorios para evitar 403 si falta el index
+Options -Indexes
+
+# Asegurar que se sirva index.html por defecto
+DirectoryIndex index.html
