@@ -1,0 +1,279 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+	--bg-1: #05060a;
+	--bg-2: #0a0d14;
+	--bg-card: #0d1117;
+	--border: #1b2332;
+	--border-hover: #2a3a52;
+	--muted: #7b8ba3;
+	--text: #c9d1d9;
+	--text-bright: #e6edf3;
+	--accent: #00e5a0;
+	--accent-dim: #00c78a;
+	--accent-glow: rgba(0, 229, 160, 0.15);
+	--accent-2: #7c3aed;
+	--accent-2-glow: rgba(124, 58, 237, 0.12);
+	--danger: #f85149;
+	--warning: #d29922;
+	--info: #58a6ff;
+	color-scheme: dark;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	font-family: 'Outfit', 'Segoe UI', sans-serif;
+	background: var(--bg-1);
+	color: var(--text);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+	overflow-x: hidden;
+}
+
+/* Subtle animated background grid */
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	background:
+		radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent),
+		radial-gradient(ellipse 60% 40% at 80% 60%, var(--accent-2-glow), transparent),
+		linear-gradient(180deg, transparent 0%, rgba(0, 229, 160, 0.02) 50%, transparent 100%);
+	pointer-events: none;
+	z-index: 0;
+}
+
+body::after {
+	content: '';
+	position: fixed;
+	inset: 0;
+	background-image:
+		linear-gradient(rgba(0, 229, 160, 0.03) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(0, 229, 160, 0.03) 1px, transparent 1px);
+	background-size: 60px 60px;
+	pointer-events: none;
+	z-index: 0;
+	mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+	-webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+::selection {
+	background: rgba(0, 229, 160, 0.25);
+	color: #fff;
+}
+
+.container {
+	max-width: 1140px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 1.25rem;
+	padding-right: 1.25rem;
+	position: relative;
+	z-index: 1;
+}
+
+.page-shell {
+	min-height: 100vh;
+	padding-top: 0;
+	padding-bottom: 2.5rem;
+}
+
+/* Typography */
+.mono {
+	font-family: 'JetBrains Mono', monospace;
+}
+
+.lead {
+	color: var(--muted);
+	line-height: 1.7;
+	font-weight: 300;
+}
+
+.section-title {
+	font-weight: 700;
+	color: var(--text-bright);
+	letter-spacing: -0.02em;
+}
+
+/* Focus */
+*:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+	outline: none;
+	box-shadow: none;
+}
+
+/* Card base */
+.card {
+	background: var(--bg-card);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+	border-color: var(--border-hover);
+	box-shadow: 0 0 30px rgba(0, 229, 160, 0.05);
+	transform: translateY(-2px);
+}
+
+/* Animated skill bars */
+.skill-bar-track {
+	background: rgba(255,255,255,0.05);
+	border-radius: 6px;
+	height: 8px;
+	overflow: hidden;
+	position: relative;
+}
+
+.skill-bar-fill {
+	height: 100%;
+	border-radius: 6px;
+	background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dim) 100%);
+	transform-origin: left;
+	animation: fillBar 1.5s ease-out forwards;
+	transform: scaleX(0);
+}
+
+@keyframes fillBar {
+	to { transform: scaleX(1); }
+}
+
+/* Radar chart styles */
+.radar-container {
+	position: relative;
+	width: 280px;
+	height: 280px;
+	margin: 0 auto;
+}
+
+/* Tag styles */
+.tech-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 10px;
+	border-radius: 6px;
+	font-size: 0.75rem;
+	font-weight: 500;
+	border: 1px solid var(--border);
+	background: rgba(255,255,255,0.03);
+	color: var(--text);
+	transition: all 0.2s ease;
+}
+
+.tech-tag:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+	background: var(--accent-glow);
+}
+
+/* Glow button */
+.btn-glow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 24px;
+	border-radius: 8px;
+	font-weight: 600;
+	font-size: 0.875rem;
+	border: 1px solid var(--accent);
+	color: var(--bg-1);
+	background: var(--accent);
+	transition: all 0.3s ease;
+	position: relative;
+}
+
+.btn-glow:hover {
+	box-shadow: 0 0 25px var(--accent-glow), 0 0 50px rgba(0, 229, 160, 0.1);
+	transform: translateY(-1px);
+}
+
+.btn-ghost {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 24px;
+	border-radius: 8px;
+	font-weight: 500;
+	font-size: 0.875rem;
+	border: 1px solid var(--border);
+	color: var(--text);
+	background: transparent;
+	transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+/* Section divider */
+.section-divider {
+	height: 1px;
+	background: linear-gradient(90deg, transparent, var(--border), transparent);
+	border: none;
+	margin: 4rem 0;
+}
+
+/* Scroll reveal */
+.reveal {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Stagger children */
+.stagger > * {
+	opacity: 0;
+	transform: translateY(15px);
+	transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.stagger.visible > *:nth-child(1) { transition-delay: 0.05s; opacity: 1; transform: translateY(0); }
+.stagger.visible > *:nth-child(2) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
+.stagger.visible > *:nth-child(3) { transition-delay: 0.15s; opacity: 1; transform: translateY(0); }
+.stagger.visible > *:nth-child(4) { transition-delay: 0.2s; opacity: 1; transform: translateY(0); }
+.stagger.visible > *:nth-child(5) { transition-delay: 0.25s; opacity: 1; transform: translateY(0); }
+.stagger.visible > *:nth-child(6) { transition-delay: 0.3s; opacity: 1; transform: translateY(0); }
+.stagger.visible > *:nth-child(7) { transition-delay: 0.35s; opacity: 1; transform: translateY(0); }
+.stagger.visible > *:nth-child(8) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
+
+/* Chart donut */
+.donut-segment {
+	transition: stroke-dashoffset 1.2s ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+	width: 6px;
+}
+::-webkit-scrollbar-track {
+	background: var(--bg-1);
+}
+::-webkit-scrollbar-thumb {
+	background: var(--border);
+	border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--muted);
+}

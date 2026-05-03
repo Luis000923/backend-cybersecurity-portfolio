@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CertificateCard from '../components/CertificateCard.astro';
+import fs from 'fs';
+import path from 'path';
+
+const certDir = path.join(process.cwd(), '..', 'public', 'certificates');
+let files: { name: string; url: string; ext: string }[] = [];
+try {
+  if (fs.existsSync(certDir)) {
+    files = fs.readdirSync(certDir)
+      .filter((f) => !f.startsWith('.'))
+      .map((name) => ({
+        name,
+        url: `/certificates/${encodeURIComponent(name)}`,
+        ext: path.extname(name).toLowerCase(),
+      }));
+  }
+} catch (e) {
+  files = [];
+}
+
+const meta = {
+  title: 'Certificados — Luis Ernesto Galdámez',
+  description: 'Certificados y diplomas profesionales de Luis Ernesto Galdámez en desarrollo backend y ciberseguridad.',
+};
+---
+
+<BaseLayout title={meta.title} description={meta.description}>
+  <section class="container pt-32 pb-20">
+    <div class="flex items-center gap-3 mb-8">
+      <span class="mono text-xs text-[var(--accent)] tracking-widest uppercase">Certificaciones</span>
+      <span class="w-8 h-px bg-[var(--accent)]/50"></span>
+    </div>
+    
+    <h1 class="text-4xl font-bold text-[var(--text-bright)] mb-3">Certificados & Diplomas</h1>
+    <p class="lead text-base max-w-xl mb-10">
+      Certificaciones obtenidas en mi trayectoria de aprendizaje continuo en desarrollo y ciberseguridad.
+    </p>
+
+    {files.length === 0 ? (
+      <div class="card p-12 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-[var(--accent)]/10 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+        <p class="text-[var(--muted)]">Agrega certificados en <code class="mono text-xs bg-white/5 px-2 py-0.5 rounded">/public/certificates</code></p>
+      </div>
+    ) : (
+      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3 stagger">
+        {files.map((f) => (
+          <CertificateCard name={f.name} url={f.url} ext={f.ext} />
+        ))}
+      </div>
+    )}
+
+    <div class="mt-12 text-center">
+      <a href="/" class="btn-ghost text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Volver al inicio
+      </a>
+    </div>
+  </section>
+</BaseLayout>

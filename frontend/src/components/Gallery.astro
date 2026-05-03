@@ -1,0 +1,56 @@
+---
+import fs from 'fs';
+import path from 'path';
+
+// Read images from the root public/images directory
+const imagesDir = path.join(process.cwd(), '..', 'public', 'images');
+let images: string[] = [];
+
+try {
+  if (fs.existsSync(imagesDir)) {
+    images = fs.readdirSync(imagesDir)
+      .filter(f => !f.startsWith('.') && /\.(jpe?g|png|webp|gif)$/i.test(f))
+      .map(name => `/images/${name}`);
+  }
+} catch (e) {
+  images = [];
+}
+---
+
+<section id="gallery" class="container py-20 reveal">
+  <div class="flex items-center gap-3 mb-10">
+    <span class="mono text-xs text-[var(--accent)] tracking-widest uppercase">Galería</span>
+    <span class="w-8 h-px bg-[var(--accent)]/50"></span>
+    <h2 class="section-title text-3xl">Mis Imágenes</h2>
+  </div>
+
+  {images.length === 0 ? (
+    <div class="card p-12 text-center">
+      <p class="text-[var(--muted)]">No se encontraron imágenes en <code class="mono text-xs bg-white/5 px-2 py-0.5 rounded">/public/images</code></p>
+    </div>
+  ) : (
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
+      {images.map((src) => (
+        <div class="group relative aspect-square overflow-hidden rounded-xl border border-[var(--border)] card">
+          <img 
+            src={src} 
+            alt="Luis Galdámez Gallery Image" 
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 bg-[var(--accent)]/0 group-hover:bg-[var(--accent)]/10 transition-colors pointer-events-none"></div>
+          
+          <!-- Zoom indicator or link could go here -->
+          <a 
+            href={src} 
+            target="_blank" 
+            class="absolute bottom-3 right-3 w-8 h-8 rounded-lg bg-[var(--bg-card)]/80 backdrop-blur-sm border border-[var(--border)] flex items-center justify-center text-[var(--muted)] opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="Ver imagen completa"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+          </a>
+        </div>
+      ))}
+    </div>
+  )}
+</section>

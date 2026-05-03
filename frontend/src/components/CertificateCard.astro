@@ -1,0 +1,43 @@
+---
+const { name, url, ext } = Astro.props;
+const isImage = ['.png', '.jpg', '.jpeg', '.webp'].includes(ext.toLowerCase());
+const isPdf = ext.toLowerCase() === '.pdf';
+const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
+---
+
+<article class="card p-4 group cursor-pointer">
+  <a href={url} target="_blank" rel="noreferrer" class="block h-full">
+    <div class="w-full h-52 sm:h-60 bg-[var(--bg-1)] rounded-lg overflow-hidden relative border border-[var(--border)]">
+      {isImage && (
+        <img src={url} alt={displayName} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+      )}
+      
+      {isPdf && (
+        <div class="w-full h-full flex flex-col items-center justify-center gap-3">
+          <div class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center">
+            <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+          </div>
+          <span class="mono text-xs text-[var(--muted)] uppercase tracking-wider">PDF</span>
+        </div>
+      )}
+
+      {!isImage && !isPdf && (
+        <div class="flex items-center justify-center h-full">
+          <svg class="w-12 h-12 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+        </div>
+      )}
+
+      <!-- Hover overlay -->
+      <div class="absolute inset-0 bg-[var(--accent)]/0 group-hover:bg-[var(--accent)]/5 transition-colors flex items-center justify-center">
+        <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--bg-card)]/90 text-[var(--accent)] text-xs mono px-3 py-1.5 rounded-lg border border-[var(--accent)]/30">
+          Abrir ↗
+        </span>
+      </div>
+    </div>
+    
+    <div class="mt-4 text-center">
+      <h3 class="font-medium text-[var(--text-bright)] text-sm truncate group-hover:text-[var(--accent)] transition-colors" title={displayName}>{displayName}</h3>
+      <p class="text-[10px] text-[var(--muted)] mt-1 uppercase mono tracking-widest">{ext.replace('.', '')}</p>
+    </div>
+  </a>
+</article>

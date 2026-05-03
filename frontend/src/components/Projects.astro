@@ -1,0 +1,151 @@
+---
+import ProjectCard from './ProjectCard.astro';
+
+// Real projects from Luis's GitHub - curated selection of most impressive ones
+const projects = [
+  {
+    title: 'backend-cybersecurity-portfolio',
+    description: 'Código fuente de mi portafolio personal. Implementación de arquitectura limpia con Node.js y Express, seguridad robusta mediante Helmet y Rate Limiting, y visualización de proyectos con Astro. Diseñado para demostrar nivel técnico en desarrollo seguro.',
+    tags: ['Astro', 'TailwindCSS', 'Node.js', 'Express', 'Security'],
+    url: 'https://github.com/Luis000923/backend-cybersecurity-portfolio',
+    featured: true,
+    isThisSite: true,
+    icon: 'briefcase',
+    languages: ['JavaScript', 'HTML', 'CSS'],
+    mainTech: ['Astro', 'TailwindCSS', 'Express', 'Nodemailer']
+  },
+  {
+    title: 'secure-scan',
+    description: 'Herramienta de análisis estático de código (SAST) para detectar vulnerabilidades de seguridad y código malicioso en proyectos de software. Soporta múltiples lenguajes.',
+    tags: ['TypeScript', 'Python', 'SAST', 'CLI', 'Security'],
+    url: 'https://github.com/Luis000923/secure-scan',
+    featured: true,
+    icon: 'shield',
+    languages: ['JavaScript', 'PHP', 'Python', 'TypeScript'],
+    mainTech: ['Commander', 'Babel', 'Winston', 'OpenAI', 'Anthropic SDK']
+  },
+  {
+    title: 'S4VI_BOT',
+    description: 'Bot multifuncional para Discord con integración web usando Flask, soporte de comandos avanzados, web scraping y monitoreo de recursos del sistema.',
+    tags: ['Python', 'Discord.js', 'Flask', 'Bot', 'Web Scraping'],
+    url: 'https://github.com/Luis000923/S4VI_BOT',
+    featured: true,
+    icon: 'bot',
+    languages: ['Python', 'JavaScript', 'Go Template'],
+    mainTech: ['discord.py', 'Flask', 'BeautifulSoup', 'aiohttp']
+  },
+  {
+    title: 'AviTrack',
+    description: 'Aplicación móvil de registro y seguimiento de pollos con autenticación Google, sincronización en la nube con Firebase y exportación de datos.',
+    tags: ['React Native', 'Expo', 'Firebase', 'TypeScript', 'Mobile'],
+    url: 'https://github.com/Luis000923/AviTrack',
+    featured: false,
+    icon: 'mobile',
+    languages: ['TypeScript', 'JavaScript'],
+    mainTech: ['React Native', 'Expo', 'Firebase', 'Google Sign-In']
+  },
+  {
+    title: 'bot-grupo-whatsapp',
+    description: 'Bot de WhatsApp para grupos con funcionalidades de entretenimiento, integración con Electron para interfaz de escritorio y base de datos SQLite.',
+    tags: ['Node.js', 'WhatsApp API', 'Electron', 'SQLite', 'Bot'],
+    url: 'https://github.com/Luis000923/bot-grupo-whatsapp',
+    featured: false,
+    icon: 'chat',
+    languages: ['JavaScript', 'HTML', 'CSS'],
+    mainTech: ['Baileys', 'Express', 'Electron', 'SQLite3']
+  },
+  {
+    title: 'Web_security_scanner',
+    description: 'Herramienta de línea de comandos para realizar pruebas básicas de seguridad en sitios web. Detección de vulnerabilidades comunes y reportes automatizados.',
+    tags: ['Python', 'Security', 'CLI', 'Scanner'],
+    url: 'https://github.com/Luis000923/Web_security_scanner',
+    featured: false,
+    icon: 'scan',
+    languages: ['Python', 'HTML'],
+    mainTech: ['Python CLI', 'HTTP Analysis']
+  },
+  {
+    title: 'AM-Visual',
+    description: 'Aplicación de escritorio intuitiva y visual para aplicar una o múltiples marcas de agua a imágenes de forma masiva. Procesamiento batch eficiente.',
+    tags: ['Python', 'Desktop App', 'Image Processing', 'Batch'],
+    url: 'https://github.com/Luis000923/AM-Visual',
+    featured: false,
+    icon: 'image',
+    languages: ['Python'],
+    mainTech: ['Python', 'Image Processing']
+  },
+  {
+    title: 'Bot-formulario-de-google-',
+    description: 'Bot en Python que automatiza el llenado y envío de formularios de Google Forms usando Selenium. Automatización de procesos repetitivos.',
+    tags: ['Python', 'Selenium', 'Automation', 'Web Scraping'],
+    url: 'https://github.com/Luis000923/Bot-formulario-de-google-',
+    featured: false,
+    icon: 'automation',
+    languages: ['Python'],
+    mainTech: ['Selenium', 'WebDriver Manager']
+  },
+  {
+    title: 'videos-a-9-16',
+    description: 'Script que convierte videos a formato 9:16 ideal para YouTube Shorts. Procesamiento automático con MoviePy y optimización para redes sociales.',
+    tags: ['Python', 'Video Processing', 'FFmpeg', 'Automation'],
+    url: 'https://github.com/Luis000923/videos-a-9-16',
+    featured: false,
+    icon: 'video',
+    languages: ['Python'],
+    mainTech: ['MoviePy', 'Pillow', 'FFmpeg']
+  },
+];
+---
+
+<section id="projects" class="container py-20 reveal">
+  <div class="flex items-center justify-between mb-10 flex-wrap gap-4">
+    <div class="flex items-center gap-3">
+      <span class="mono text-xs text-[var(--accent)] tracking-widest uppercase">03</span>
+      <span class="w-8 h-px bg-[var(--accent)]/50"></span>
+      <h2 class="section-title text-3xl">Proyectos reales</h2>
+    </div>
+    <a href="https://github.com/Luis000923?tab=repositories" target="_blank" rel="noreferrer" class="btn-ghost text-xs">
+      Ver todos en GitHub
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+    </a>
+  </div>
+
+  <!-- Pyramid / Triangle Layout -->
+  <div class="flex flex-col gap-6 md:gap-8">
+    <!-- Row 1: The Lead (Featured) -->
+    <div class="flex justify-center">
+      <div class="w-full md:w-3/4 lg:w-2/3">
+        {projects.filter(p => p.title === 'backend-cybersecurity-portfolio').map((p) => (
+          <ProjectCard {...p} featured={true} />
+        ))}
+      </div>
+    </div>
+
+    <!-- Row 2: Featured Support -->
+    <div class="flex flex-wrap justify-center gap-6">
+      {projects.filter(p => p.featured && p.title !== 'backend-cybersecurity-portfolio').map((p) => (
+        <div class="w-full md:w-[calc(50%-12px)] lg:w-[calc(45%-12px)]">
+          <ProjectCard {...p} />
+        </div>
+      ))}
+    </div>
+
+    <!-- Row 3: Core Projects -->
+    <div class="flex flex-wrap justify-center gap-4">
+      {projects.filter(p => !p.featured).slice(0, 3).map((p) => (
+        <div class="w-full md:w-[calc(33.33%-11px)]">
+          <ProjectCard {...p} />
+        </div>
+      ))}
+    </div>
+
+    <!-- Row 4: Complementary Projects -->
+    <div class="flex flex-wrap justify-center gap-4">
+      {projects.filter(p => !p.featured).slice(3, 6).map((p) => (
+        <div class="w-full md:w-[calc(40%-11px)] lg:w-[calc(30%-11px)]">
+          <ProjectCard {...p} />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

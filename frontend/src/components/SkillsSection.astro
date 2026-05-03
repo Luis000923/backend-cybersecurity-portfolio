@@ -1,0 +1,20 @@
+---
+const { categories = [
+  { title: 'Backend', items: ['Node.js', 'Express', 'TypeScript', 'Postgres'] },
+  { title: 'Seguridad', items: ['Threat modelling', 'Hardening', 'SIEM', 'Forensics'] }
+] } = Astro.props;
+---
+
+<section id="skills" class="mt-12">
+  <h2 class="section-title text-2xl">Skills técnicas</h2>
+  <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+    {categories.map((cat) => (
+      <div>
+        <h3 class="font-semibold text-white">{cat.title}</h3>
+        <ul class="mt-3 text-slate-300 list-disc list-inside">
+          {cat.items.map((i) => (<li>{i}</li>))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</section>

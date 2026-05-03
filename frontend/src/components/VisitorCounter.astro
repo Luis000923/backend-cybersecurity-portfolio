@@ -1,0 +1,29 @@
+---
+// VisitorCounter.astro
+---
+
+<div id="visitor-counter" class="mt-8 flex items-center gap-2 text-xs text-[var(--muted)]">
+  <div class="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse"></div>
+  <span class="mono">Cargando visitas...</span>
+</div>
+
+<script>
+  async function fetchVisits() {
+    try {
+      const apiUrl = import.meta.env.PROD ? '/api/visits' : 'http://localhost:3000/api/visits';
+      const res = await fetch(apiUrl);
+      const data = await res.json();
+      const el = document.querySelector('#visitor-counter span');
+      if (el) {
+        el.textContent = `${data.count} visitas`;
+      }
+    } catch (e) {
+      const el = document.querySelector('#visitor-counter span');
+      if (el) {
+        el.textContent = 'Portfolio activo';
+      }
+    }
+  }
+
+  fetchVisits();
+</script>

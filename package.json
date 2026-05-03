@@ -1,0 +1,17 @@
+{
+  "name": "backend-cybersecurity-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo de portafolio con Astro y Express",
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter frontend --filter backend run dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend": "pnpm --filter backend dev",
+    "build": "pnpm --filter frontend run build && pnpm --filter backend run build",
+    "start": "pnpm --filter backend start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.2"
+}

@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Contact from '../components/Contact.astro';
+
+const meta = {
+  title: 'Contacto — Luis Ernesto Galdámez',
+  description: 'Contacto profesional de Luis Ernesto Galdámez — Backend Developer y Ciberseguridad.',
+};
+---
+
+<BaseLayout title={meta.title} description={meta.description}>
+  <div class="pt-32 pb-20">
+    <Contact />
+  </div>
+</BaseLayout>

@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Skills from '../components/Skills.astro';
+import Projects from '../components/Projects.astro';
+import Gallery from '../components/Gallery.astro';
+import StarWidget from '../components/StarWidget.astro';
+import Contact from '../components/Contact.astro';
+
+const meta = {
+  title: 'Luis Ernesto Galdámez — Backend Developer & Cybersecurity',
+  description: 'Portafolio profesional de Luis Ernesto Galdámez. Desarrollador backend con enfoque en ciberseguridad. Node.js, Python, TypeScript, SAST, automatización.'
+};
+---
+
+<BaseLayout title={meta.title} description={meta.description}>
+  <Hero />
+
+  <hr class="section-divider container" />
+
+  <About />
+
+  <hr class="section-divider container" />
+
+  <Skills />
+
+  <hr class="section-divider container" />
+
+  <Projects />
+
+  <hr class="section-divider container" />
+
+  <Gallery />
+
+  <hr class="section-divider container" />
+
+  <div class="container py-10">
+    <StarWidget />
+  </div>
+
+  <hr class="section-divider container" />
+
+  <Contact />
+</BaseLayout>

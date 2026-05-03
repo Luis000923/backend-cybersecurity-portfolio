@@ -1,0 +1,49 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const {
+	title = 'Luis Ernesto Galdámez — Backend & Ciberseguridad',
+	description = 'Portafolio profesional de Luis Ernesto Galdámez. Desarrollador backend con enfoque en ciberseguridad.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="theme-color" content="#05060a" />
+		<meta name="author" content="Luis Ernesto Galdámez" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+	</head>
+	<body>
+		<div class="page-shell">
+			<Navbar />
+			<main>
+				<slot />
+			</main>
+			<Footer />
+		</div>
+
+		<script>
+			// Scroll reveal observer
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('visible');
+					}
+				});
+			}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+			document.querySelectorAll('.reveal, .stagger').forEach(el => observer.observe(el));
+		</script>
+	</body>
+</html>
