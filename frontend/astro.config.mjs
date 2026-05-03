@@ -7,5 +7,8 @@ export default defineConfig({
   publicDir: '../public',
   vite: {
     plugins: [tailwind()],
+    optimizeDeps: {
+      exclude: ['esbuild']
+    }
   },
 });
