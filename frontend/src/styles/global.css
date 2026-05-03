@@ -277,3 +277,20 @@ a {
 ::-webkit-scrollbar-thumb:hover {
 	background: var(--muted);
 }
+
+/* Stat items from Hero component */
+.stat-item {
+  position: relative;
+  padding-left: 1rem;
+}
+.stat-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  opacity: 0.5;
+}
