@@ -8,6 +8,8 @@ export default defineConfig({
   vite: {
     build: {
       minify: false,
+      cssMinify: false,
+      sourcemap: false,
     },
     optimizeDeps: {
       exclude: ['esbuild']
