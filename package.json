@@ -7,7 +7,9 @@
     "dev": "npm run dev --prefix frontend & npm run dev --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
-    "build": "npm run build --prefix frontend && env > frontend/dist/env_debug.txt && ls -laR frontend/dist > frontend/dist/build_debug.txt && rm -rf dist && cp -r frontend/dist ./dist && npm run build --prefix backend",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "mkdir -p frontend/dist && npm run build --prefix frontend > frontend/dist/astro_build_log.txt 2>&1 || true && env > frontend/dist/env_debug.txt && ls -laR frontend/dist > frontend/dist/build_debug.txt && rm -rf dist && cp -r frontend/dist ./dist",
+    "build:backend": "npm run build --prefix backend",
     "start": "npm run start --prefix backend"
   },
   "keywords": [],
