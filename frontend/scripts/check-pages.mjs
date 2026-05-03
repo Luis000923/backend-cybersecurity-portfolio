@@ -13,8 +13,13 @@ if (!fs.existsSync(pagesDir)) {
   process.exit(1);
 }
 
-const astroPages = fs.readdirSync(pagesDir).filter((f) => f.endsWith('.astro'));
+const files = fs.readdirSync(pagesDir);
+console.log(`[debug] Files found in src/pages: ${files.join(', ')}`);
+
+const astroPages = files.filter((f) => f.endsWith('.astro'));
 if (astroPages.length === 0) {
-  console.error(`[astro] No .astro files in ${pagesDir}`);
+  console.error(`[astro] No .astro files found in ${pagesDir}`);
   process.exit(1);
 }
+
+console.log(`[astro] Found ${astroPages.length} pages to build.`);
