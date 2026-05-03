@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    # Evitar bucles infinitos
+    RewriteCond %{REQUEST_URI} !^/dist/
+    # Redirigir todo el tráfico a la subcarpeta dist
+    RewriteRule ^(.*)$ /dist/$1 [L]
+</IfModule>
+
+# Deshabilitar listado de directorios en la raíz
+Options -Indexes
