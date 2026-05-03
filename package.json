@@ -8,7 +8,7 @@
     "dev:frontend": "pnpm run dev --prefix frontend",
     "dev:backend": "pnpm run dev --prefix backend",
     "build": "pnpm run build:frontend && pnpm run build:backend",
-    "build:frontend": "mkdir -p frontend/dist && pnpm run build --prefix frontend > frontend/dist/astro_build_log.txt 2>&1 || true && env > frontend/dist/env_debug.txt && ls -laR frontend/dist > frontend/dist/build_debug.txt && rm -rf dist && cp -r frontend/dist ./dist",
+    "build:frontend": "mkdir -p frontend/dist && pnpm run build --prefix frontend && env > frontend/dist/env_debug.txt && ls -laR frontend/dist > frontend/dist/build_debug.txt && rm -rf dist && cp -r frontend/dist ./dist",
     "build:backend": "pnpm run build --prefix backend",
     "start": "pnpm run start --prefix backend"
   },
