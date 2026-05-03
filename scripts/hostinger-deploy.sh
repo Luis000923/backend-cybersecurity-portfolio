@@ -9,8 +9,8 @@ cd "$REPO_ROOT"
 
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=448}"
 
-npm install --production=false
-npm run build --prefix frontend
+pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+pnpm run build --prefix frontend
 
 DEST="${PUBLIC_HTML:-${HOME}/public_html}"
 mkdir -p "$DEST"
