@@ -13,10 +13,15 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "overrides": {
+    "esbuild": "npm:esbuild-wasm@0.24.2",
+    "vite": "^6.0.0"
+  },
   "packageManager": "pnpm@10.33.2",
   "pnpm": {
     "overrides": {
-      "esbuild": "npm:esbuild-wasm@0.24.2"
+      "esbuild": "npm:esbuild-wasm@0.24.2",
+      "vite": "^6.0.0"
     },
     "onlyBuiltDependencies": [
       "sharp"

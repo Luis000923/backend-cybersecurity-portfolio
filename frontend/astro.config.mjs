@@ -1,12 +1,10 @@
 // @ts-check
-import tailwind from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
   publicDir: '../public',
   vite: {
-    plugins: [tailwind()],
     optimizeDeps: {
       exclude: ['esbuild']
     }
