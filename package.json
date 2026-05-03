@@ -7,8 +7,8 @@
     "dev": "npx --yes pnpm run dev --prefix frontend & npx --yes pnpm run dev --prefix backend",
     "dev:frontend": "npx --yes pnpm run dev --prefix frontend",
     "dev:backend": "npx --yes pnpm run dev --prefix backend",
-    "build": "npx --yes pnpm run build --prefix frontend && node --check backend/src/server.js",
-    "build:hostinger": "NODE_OPTIONS=--max-old-space-size=448 npx --yes pnpm run build --prefix frontend",
+    "build": "export NODE_OPTIONS='--max-old-space-size=1024' && cd frontend && npx --yes pnpm install && npx --yes pnpm run build && cd .. && node --check backend/src/server.js",
+    "build:hostinger": "export NODE_OPTIONS='--max-old-space-size=1024' && cd frontend && npx --yes pnpm install && npx --yes pnpm run build",
     "start": "node backend/src/server.js"
   },
   "keywords": [],

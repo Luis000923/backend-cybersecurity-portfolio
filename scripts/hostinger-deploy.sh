@@ -7,10 +7,11 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
-export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=448}"
-
-npx --yes pnpm install --frozen-lockfile 2>/dev/null || npx --yes pnpm install
-npx --yes pnpm run build --prefix frontend
+export NODE_OPTIONS='--max-old-space-size=1024'
+cd frontend
+npx --yes pnpm install
+npx --yes pnpm run build
+cd ..
 
 DEST="${PUBLIC_HTML:-${HOME}/public_html}"
 mkdir -p "$DEST"
