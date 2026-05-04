@@ -41,7 +41,9 @@ const modalId = `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
     
     <div class="mt-4 text-center">
       <h3 class="font-medium text-[var(--text-bright)] text-sm truncate group-hover:text-[var(--accent)] transition-colors" title={displayName}>{displayName}</h3>
-      <p class="text-[10px] text-[var(--muted)] mt-1 uppercase mono tracking-widest">{ext.replace('.', '')}</p>
+      {!isPdf && (
+        <p class="text-[10px] text-[var(--muted)] mt-1 uppercase mono tracking-widest">{ext.replace('.', '')}</p>
+      )}
     </div>
   </div>
 
