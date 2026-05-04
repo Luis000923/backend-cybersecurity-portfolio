@@ -22,32 +22,32 @@ const modalId = `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
   </button>
 
   <!-- Modal -->
-  <dialog id={modalId} class="pdf-modal backdrop:bg-black/50 backdrop:backdrop-blur-sm rounded-lg shadow-2xl max-w-4xl w-11/12 max-h-[90vh] p-0">
+  <dialog id={modalId} class="pdf-modal backdrop:bg-black/50 backdrop:backdrop-blur-sm rounded-lg shadow-2xl max-w-4xl w-11/12 md:w-4/5 max-h-[90vh] md:max-h-[85vh] p-0 md:p-0">
     <div class="flex flex-col h-full bg-[var(--bg-card)] rounded-lg overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between p-4 border-b border-[var(--border)]">
-        <div class="flex-1">
-          <h2 class="font-semibold text-[var(--text-bright)] truncate">{name}</h2>
+      <div class="flex items-center justify-between p-3 md:p-4 border-b border-[var(--border)]">
+        <div class="flex-1 min-w-0">
+          <h2 class="font-semibold text-[var(--text-bright)] truncate text-sm md:text-base">{name}</h2>
         </div>
-        <div class="flex items-center gap-2">
-          <button class="pdf-prev-btn p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors disabled:opacity-50" disabled aria-label="Página anterior">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-1 md:gap-2 ml-2">
+          <button class="pdf-prev-btn p-2 md:p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors disabled:opacity-50" disabled aria-label="Página anterior">
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
           </button>
-          <span class="pdf-page-info mono text-xs text-[var(--muted)] px-3 py-1 bg-[var(--bg-1)] rounded">1 / 1</span>
-          <button class="pdf-next-btn p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors disabled:opacity-50" disabled aria-label="Página siguiente">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <span class="pdf-page-info mono text-xs text-[var(--muted)] px-2 md:px-3 py-1 bg-[var(--bg-1)] rounded whitespace-nowrap">1 / 1</span>
+          <button class="pdf-next-btn p-2 md:p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors disabled:opacity-50" disabled aria-label="Página siguiente">
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
           </button>
-          <a href={url} download class="p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors" aria-label="Descargar">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <a href={url} download class="p-2 md:p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors" aria-label="Descargar">
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
             </svg>
           </a>
-          <button class="pdf-close-btn p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors" aria-label="Cerrar">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button class="pdf-close-btn p-2 md:p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors" aria-label="Cerrar">
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
@@ -111,6 +111,29 @@ const modalId = `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
       modal?.addEventListener('close', () => {
         this.currentPage = 1;
       });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (!modal?.open) return;
+        if (e.key === 'ArrowLeft') this.prevPage();
+        if (e.key === 'ArrowRight') this.nextPage();
+        if (e.key === 'Escape') this.closeModal();
+      });
+
+      // Touch swipe support for mobile
+      let touchStartX = 0;
+      const canvas = modal?.querySelector('.pdf-canvas');
+      canvas?.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+      });
+      canvas?.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) { // Swipe threshold
+          if (diff > 0) this.nextPage();
+          else this.prevPage();
+        }
+      });
     }
 
     async openModal() {
@@ -156,7 +179,16 @@ const modalId = `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
         canvas.style.display = 'none';
 
         const page = await this.pdf.getPage(pageNumber);
-        const viewport = page.getViewport({ scale: 2 });
+        
+        // Dynamically calculate scale based on viewport
+        let scale = 2;
+        if (window.innerWidth < 768) {
+          scale = 1.2; // Lower scale for mobile to prevent lag
+        } else if (window.innerWidth < 1024) {
+          scale = 1.5;
+        }
+        
+        const viewport = page.getViewport({ scale });
 
         canvas.width = viewport.width;
         canvas.height = viewport.height;

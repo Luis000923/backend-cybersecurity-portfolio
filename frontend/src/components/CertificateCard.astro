@@ -1,13 +1,15 @@
 ---
 import PdfViewer from './PdfViewer.astro';
+import PdfPreviewThumbnail from './PdfPreviewThumbnail.astro';
 
 const { name, url, ext } = Astro.props;
 const isImage = ['.png', '.jpg', '.jpeg', '.webp'].includes(ext.toLowerCase());
 const isPdf = ext.toLowerCase() === '.pdf';
 const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
+const cardId = `cert-card-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
-<article class="card p-4 group cursor-pointer">
+<article class="card p-4 group cursor-pointer" id={cardId}>
   <div class="block h-full">
     <div class="w-full h-52 sm:h-60 bg-[var(--bg-1)] rounded-lg overflow-hidden relative border border-[var(--border)]">
       {isImage && (
@@ -17,7 +19,9 @@ const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
       )}
       
       {isPdf && (
-        <PdfViewer url={url} name={displayName} />
+        <div class="w-full h-full cursor-pointer pdf-card-trigger" role="button" tabindex="0">
+          <PdfPreviewThumbnail url={url} name={displayName} />
+        </div>
       )}
 
       {!isImage && !isPdf && (
@@ -39,4 +43,28 @@ const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
       <p class="text-[10px] text-[var(--muted)] mt-1 uppercase mono tracking-widest">{ext.replace('.', '')}</p>
     </div>
   </div>
+
+  {isPdf && (
+    <PdfViewer url={url} name={displayName} />
+  )}
 </article>
+
+<script define:vars={{ cardId }}>
+  const card = document.getElementById(cardId);
+  const pdfTrigger = card?.querySelector('.pdf-card-trigger');
+  const pdfOpenBtn = card?.querySelector('.pdf-open-btn');
+
+  // Make PDF card trigger clickable
+  if (pdfTrigger) {
+    pdfTrigger.addEventListener('click', () => {
+      pdfOpenBtn?.click();
+    });
+
+    pdfTrigger.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        pdfOpenBtn?.click();
+      }
+    });
+  }
+</script>
