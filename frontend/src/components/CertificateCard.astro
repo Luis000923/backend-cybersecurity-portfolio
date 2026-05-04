@@ -3,6 +3,7 @@ const { name, url, ext } = Astro.props;
 const isImage = ['.png', '.jpg', '.jpeg', '.webp'].includes(ext.toLowerCase());
 const isPdf = ext.toLowerCase() === '.pdf';
 const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
+const pdfId = `pdf-preview-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <article class="card p-4 group cursor-pointer">
@@ -13,11 +14,14 @@ const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
       )}
       
       {isPdf && (
-        <div class="w-full h-full flex flex-col items-center justify-center gap-3">
-          <div class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center">
-            <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+        <div class="pdf-preview-container w-full h-full flex flex-col items-center justify-center gap-3 bg-[var(--bg-1)]" data-pdf-url={url} data-pdf-id={pdfId}>
+          <canvas id={pdfId} class="w-full h-full" style="display: none;"></canvas>
+          <div class="pdf-fallback flex flex-col items-center justify-center gap-3 w-full h-full">
+            <div class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center">
+              <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            </div>
+            <span class="mono text-xs text-[var(--muted)] uppercase tracking-wider">PDF</span>
           </div>
-          <span class="mono text-xs text-[var(--muted)] uppercase tracking-wider">PDF</span>
         </div>
       )}
 
@@ -41,3 +45,54 @@ const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
     </div>
   </a>
 </article>
+
+{isPdf && (
+  <script define:vars={{ pdfId }}>
+    import * as pdfjsLib from 'pdfjs-dist';
+    
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    
+    async function renderPdfPreview() {
+      const canvas = document.getElementById(pdfId);
+      if (!canvas) return;
+      
+      const container = canvas.closest('.pdf-preview-container');
+      if (!container) return;
+      
+      const pdfUrl = container.dataset.pdfUrl;
+      
+      try {
+        const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+        const page = await pdf.getPage(1);
+        
+        // Obtener dimensiones del contenedor
+        const containerRect = canvas.parentElement.getBoundingClientRect();
+        const scale = containerRect.width / page.getViewport({ scale: 1 }).width;
+        
+        const viewport = page.getViewport({ scale: Math.max(scale, 1.5) });
+        
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        
+        const context = canvas.getContext('2d');
+        await page.render({
+          canvasContext: context,
+          viewport: viewport,
+        }).promise;
+        
+        // Mostrar canvas y ocultar fallback
+        canvas.style.display = 'block';
+        const fallback = container.querySelector('.pdf-fallback');
+        if (fallback) fallback.style.display = 'none';
+      } catch (error) {
+        console.error('Error rendering PDF preview:', error);
+      }
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', renderPdfPreview);
+    } else {
+      renderPdfPreview();
+    }
+  </script>
+)}
