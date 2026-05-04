@@ -18,11 +18,11 @@ mkdir -p "$DEST"
 
 # Sincroniza y elimina en destino lo que ya no está en dist (evita HTML antiguos mezclados)
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --delete "${REPO_ROOT}/dist/" "${DEST}/"
+  rsync -a --delete "${REPO_ROOT}/frontend/dist/" "${DEST}/"
 else
   echo "rsync no encontrado; usando cp (no borra archivos huérfanos en destino)."
   rm -rf "${DEST:?}/"*
-  cp -a "${REPO_ROOT}/dist/." "${DEST}/"
+  cp -a "${REPO_ROOT}/frontend/dist/." "${DEST}/"
 fi
 
 echo "Desplegado en: ${DEST}"
