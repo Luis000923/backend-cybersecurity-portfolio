@@ -1,0 +1,239 @@
+---
+interface Props {
+  url: string;
+  name: string;
+}
+
+const { url, name } = Astro.props;
+const pdfId = `pdf-viewer-${Math.random().toString(36).substr(2, 9)}`;
+const modalId = `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class="pdf-viewer" data-pdf-url={url} data-pdf-id={pdfId} data-modal-id={modalId} data-name={name}>
+  <button class="pdf-open-btn w-full h-full flex items-center justify-center hover:opacity-80 transition-opacity" aria-label={`Ver ${name}`}>
+    <div class="flex flex-col items-center justify-center gap-3 w-full h-full">
+      <div class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center">
+        <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+      <span class="mono text-xs text-[var(--muted)] uppercase tracking-wider">PDF</span>
+    </div>
+  </button>
+
+  <!-- Modal -->
+  <dialog id={modalId} class="pdf-modal backdrop:bg-black/50 backdrop:backdrop-blur-sm rounded-lg shadow-2xl max-w-4xl w-11/12 max-h-[90vh] p-0">
+    <div class="flex flex-col h-full bg-[var(--bg-card)] rounded-lg overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b border-[var(--border)]">
+        <div class="flex-1">
+          <h2 class="font-semibold text-[var(--text-bright)] truncate">{name}</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="pdf-prev-btn p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors disabled:opacity-50" disabled aria-label="Página anterior">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <span class="pdf-page-info mono text-xs text-[var(--muted)] px-3 py-1 bg-[var(--bg-1)] rounded">1 / 1</span>
+          <button class="pdf-next-btn p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors disabled:opacity-50" disabled aria-label="Página siguiente">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+          <a href={url} download class="p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors" aria-label="Descargar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+          </a>
+          <button class="pdf-close-btn p-2 hover:bg-[var(--bg-1)] rounded-lg transition-colors" aria-label="Cerrar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- PDF Viewer -->
+      <div class="flex-1 overflow-auto flex items-center justify-center p-4 bg-[var(--bg-1)]">
+        <canvas id={pdfId} class="pdf-canvas max-w-full max-h-full" style="display: none;"></canvas>
+        <div class="pdf-loading text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-[var(--accent)]/10 mb-4">
+            <svg class="w-6 h-6 text-[var(--accent)] animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+          <p class="text-sm text-[var(--muted)]">Cargando PDF...</p>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<script define:vars={{ pdfId, modalId, url, name }}>
+  // Importar PDF.js
+  import * as pdfjsLib from 'pdfjs-dist';
+
+  // Configurar worker
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.js',
+    import.meta.url,
+  ).toString();
+
+  class PdfViewer {
+    constructor(pdfId, modalId, url) {
+      this.pdfId = pdfId;
+      this.modalId = modalId;
+      this.url = url;
+      this.pdf = null;
+      this.currentPage = 1;
+      this.totalPages = 0;
+      this.init();
+    }
+
+    init() {
+      const openBtn = document.querySelector(`[data-pdf-id="${this.pdfId}"] .pdf-open-btn`);
+      const modal = document.getElementById(this.modalId);
+      const closeBtn = modal?.querySelector('.pdf-close-btn');
+      const prevBtn = modal?.querySelector('.pdf-prev-btn');
+      const nextBtn = modal?.querySelector('.pdf-next-btn');
+
+      openBtn?.addEventListener('click', () => this.openModal());
+      closeBtn?.addEventListener('click', () => this.closeModal());
+      prevBtn?.addEventListener('click', () => this.prevPage());
+      nextBtn?.addEventListener('click', () => this.nextPage());
+      modal?.addEventListener('click', (e) => {
+        if (e.target === modal) this.closeModal();
+      });
+
+      // Cargar PDF cuando se abra el modal
+      modal?.addEventListener('close', () => {
+        this.currentPage = 1;
+      });
+    }
+
+    async openModal() {
+      const modal = document.getElementById(this.modalId);
+      modal?.showModal();
+      
+      if (!this.pdf) {
+        await this.loadPdf();
+      }
+      await this.renderPage(1);
+    }
+
+    closeModal() {
+      const modal = document.getElementById(this.modalId);
+      modal?.close();
+    }
+
+    async loadPdf() {
+      try {
+        this.pdf = await pdfjsLib.getDocument(this.url).promise;
+        this.totalPages = this.pdf.numPages;
+      } catch (error) {
+        console.error('Error loading PDF:', error);
+        this.showError('Error al cargar el PDF');
+      }
+    }
+
+    async renderPage(pageNumber) {
+      if (!this.pdf || pageNumber < 1 || pageNumber > this.totalPages) return;
+
+      this.currentPage = pageNumber;
+      const modal = document.getElementById(this.modalId);
+      const canvas = modal?.querySelector('.pdf-canvas');
+      const loading = modal?.querySelector('.pdf-loading');
+      const pageInfo = modal?.querySelector('.pdf-page-info');
+      const prevBtn = modal?.querySelector('.pdf-prev-btn');
+      const nextBtn = modal?.querySelector('.pdf-next-btn');
+
+      if (!canvas) return;
+
+      try {
+        loading?.style.display ? (loading.style.display = 'flex') : null;
+        canvas.style.display = 'none';
+
+        const page = await this.pdf.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: 2 });
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        const context = canvas.getContext('2d');
+        await page.render({
+          canvasContext: context,
+          viewport: viewport,
+        }).promise;
+
+        canvas.style.display = 'block';
+        loading?.style.display ? (loading.style.display = 'none') : null;
+
+        // Update UI
+        if (pageInfo) pageInfo.textContent = `${pageNumber} / ${this.totalPages}`;
+        if (prevBtn) prevBtn.disabled = pageNumber === 1;
+        if (nextBtn) nextBtn.disabled = pageNumber === this.totalPages;
+      } catch (error) {
+        console.error('Error rendering page:', error);
+        this.showError('Error al renderizar la página');
+      }
+    }
+
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.renderPage(this.currentPage - 1);
+      }
+    }
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.renderPage(this.currentPage + 1);
+      }
+    }
+
+    showError(message) {
+      const modal = document.getElementById(this.modalId);
+      const loading = modal?.querySelector('.pdf-loading');
+      if (loading) {
+        loading.innerHTML = `<p class="text-sm text-red-400">${message}</p>`;
+      }
+    }
+  }
+
+  // Initialize viewer
+  new PdfViewer(pdfId, modalId, url);
+</script>
+
+<style>
+  dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  dialog {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .pdf-canvas {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 640px) {
+    dialog {
+      width: 95vw;
+      max-height: 95vh;
+    }
+  }
+</style>

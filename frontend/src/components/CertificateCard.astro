@@ -1,28 +1,23 @@
 ---
+import PdfViewer from './PdfViewer.astro';
+
 const { name, url, ext } = Astro.props;
 const isImage = ['.png', '.jpg', '.jpeg', '.webp'].includes(ext.toLowerCase());
 const isPdf = ext.toLowerCase() === '.pdf';
 const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
-const pdfId = `pdf-preview-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <article class="card p-4 group cursor-pointer">
-  <a href={url} target="_blank" rel="noreferrer" class="block h-full">
+  <div class="block h-full">
     <div class="w-full h-52 sm:h-60 bg-[var(--bg-1)] rounded-lg overflow-hidden relative border border-[var(--border)]">
       {isImage && (
-        <img src={url} alt={displayName} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+        <a href={url} target="_blank" rel="noreferrer" class="w-full h-full block">
+          <img src={url} alt={displayName} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+        </a>
       )}
       
       {isPdf && (
-        <div class="pdf-preview-container w-full h-full flex flex-col items-center justify-center gap-3 bg-[var(--bg-1)]" data-pdf-url={url} data-pdf-id={pdfId}>
-          <canvas id={pdfId} class="w-full h-full max-w-full max-h-full" style="display: none;"></canvas>
-          <div class="pdf-fallback flex flex-col items-center justify-center gap-3 w-full h-full">
-            <div class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center">
-              <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-            </div>
-            <span class="mono text-xs text-[var(--muted)] uppercase tracking-wider">PDF</span>
-          </div>
-        </div>
+        <PdfViewer url={url} name={displayName} />
       )}
 
       {!isImage && !isPdf && (
@@ -34,7 +29,7 @@ const pdfId = `pdf-preview-${Math.random().toString(36).substr(2, 9)}`;
       <!-- Hover overlay -->
       <div class="absolute inset-0 bg-[var(--accent)]/0 group-hover:bg-[var(--accent)]/5 transition-colors flex items-center justify-center">
         <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--bg-card)]/90 text-[var(--accent)] text-xs mono px-3 py-1.5 rounded-lg border border-[var(--accent)]/30">
-          Abrir ↗
+          {isPdf ? 'Ver ↗' : 'Abrir ↗'}
         </span>
       </div>
     </div>
@@ -43,68 +38,5 @@ const pdfId = `pdf-preview-${Math.random().toString(36).substr(2, 9)}`;
       <h3 class="font-medium text-[var(--text-bright)] text-sm truncate group-hover:text-[var(--accent)] transition-colors" title={displayName}>{displayName}</h3>
       <p class="text-[10px] text-[var(--muted)] mt-1 uppercase mono tracking-widest">{ext.replace('.', '')}</p>
     </div>
-  </a>
+  </div>
 </article>
-
-{isPdf && (
-  <script define:vars={{ pdfId, url }}>
-    // Cargar PDF.js desde CDN
-    const pdfjsScript = document.createElement('script');
-    pdfjsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js';
-    
-    pdfjsScript.onload = function() {
-      // Configurar worker
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js';
-      
-      async function renderPdfPreview() {
-        const canvas = document.getElementById(pdfId);
-        if (!canvas || !canvas.parentElement) return;
-        
-        try {
-          const container = canvas.closest('.pdf-preview-container');
-          if (!container) return;
-          
-          const pdfUrl = url;
-          const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-          const page = await pdf.getPage(1);
-          
-          // Obtener dimensiones del contenedor padre
-          const containerRect = container.getBoundingClientRect();
-          const initialViewport = page.getViewport({ scale: 1 });
-          const scale = Math.min(containerRect.width / initialViewport.width, containerRect.height / initialViewport.height) * 1.2;
-          
-          const viewport = page.getViewport({ scale });
-          
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          canvas.style.maxWidth = '100%';
-          canvas.style.maxHeight = '100%';
-          canvas.style.objectFit = 'contain';
-          
-          const context = canvas.getContext('2d');
-          await page.render({
-            canvasContext: context,
-            viewport: viewport,
-          }).promise;
-          
-          // Mostrar canvas y ocultar fallback
-          canvas.style.display = 'block';
-          const fallback = container.querySelector('.pdf-fallback');
-          if (fallback) fallback.style.display = 'none';
-        } catch (error) {
-          console.error('Error rendering PDF preview:', error);
-          // Mantener fallback visible si hay error
-        }
-      }
-      
-      // Esperar a que DOM esté listo
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', renderPdfPreview);
-      } else {
-        renderPdfPreview();
-      }
-    };
-    
-    document.head.appendChild(pdfjsScript);
-  </script>
-)}
