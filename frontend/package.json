@@ -6,10 +6,10 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "node scripts/check-pages.mjs && astro build --verbose",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "npx astro dev",
+    "build": "node scripts/check-pages.mjs && npx astro build --verbose",
+    "preview": "npx astro preview",
+    "astro": "npx astro"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.4",
