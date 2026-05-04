@@ -2,11 +2,12 @@
 interface Props {
   url: string;
   name: string;
+  modalId?: string;
 }
 
-const { url, name } = Astro.props;
+const { url, name, modalId: propModalId } = Astro.props;
+const modalId = propModalId || `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
 const pdfId = `pdf-viewer-${Math.random().toString(36).substr(2, 9)}`;
-const modalId = `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <div class="pdf-viewer" data-pdf-url={url} data-pdf-id={pdfId} data-modal-id={modalId} data-name={name}>
@@ -72,14 +73,11 @@ const modalId = `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
 </div>
 
 <script define:vars={{ pdfId, modalId, url, name }}>
-  // Importar PDF.js
   import * as pdfjsLib from 'pdfjs-dist';
 
-  // Configurar worker
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.js',
-    import.meta.url,
-  ).toString();
+  // Set up the worker with the correct path
+  const workerScript = '/pdf.worker.min.js';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerScript;
 
   class PdfViewer {
     constructor(pdfId, modalId, url) {

@@ -7,9 +7,10 @@ const isImage = ['.png', '.jpg', '.jpeg', '.webp'].includes(ext.toLowerCase());
 const isPdf = ext.toLowerCase() === '.pdf';
 const displayName = name.replace(ext, '').replace(/[-_]/g, ' ');
 const cardId = `cert-card-${Math.random().toString(36).substr(2, 9)}`;
+const modalId = `pdf-modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
-<article class="card p-4 group cursor-pointer" id={cardId}>
+<article class="card p-4 group cursor-pointer" id={cardId} data-modal-id={modalId}>
   <div class="block h-full">
     <div class="w-full h-52 sm:h-60 bg-[var(--bg-1)] rounded-lg overflow-hidden relative border border-[var(--border)]">
       {isImage && (
@@ -19,7 +20,7 @@ const cardId = `cert-card-${Math.random().toString(36).substr(2, 9)}`;
       )}
       
       {isPdf && (
-        <div class="w-full h-full cursor-pointer pdf-card-trigger" role="button" tabindex="0">
+        <div class="w-full h-full cursor-pointer pdf-preview-trigger" role="button" tabindex="0">
           <PdfPreviewThumbnail url={url} name={displayName} />
         </div>
       )}
@@ -31,7 +32,7 @@ const cardId = `cert-card-${Math.random().toString(36).substr(2, 9)}`;
       )}
 
       <!-- Hover overlay -->
-      <div class="absolute inset-0 bg-[var(--accent)]/0 group-hover:bg-[var(--accent)]/5 transition-colors flex items-center justify-center">
+      <div class="absolute inset-0 bg-[var(--accent)]/0 group-hover:bg-[var(--accent)]/5 transition-colors flex items-center justify-center pointer-events-none">
         <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--bg-card)]/90 text-[var(--accent)] text-xs mono px-3 py-1.5 rounded-lg border border-[var(--accent)]/30">
           {isPdf ? 'Ver ↗' : 'Abrir ↗'}
         </span>
@@ -45,25 +46,26 @@ const cardId = `cert-card-${Math.random().toString(36).substr(2, 9)}`;
   </div>
 
   {isPdf && (
-    <PdfViewer url={url} name={displayName} />
+    <PdfViewer url={url} name={displayName} modalId={modalId} />
   )}
 </article>
 
-<script define:vars={{ cardId }}>
+<script define:vars={{ cardId, modalId }}>
   const card = document.getElementById(cardId);
-  const pdfTrigger = card?.querySelector('.pdf-card-trigger');
-  const pdfOpenBtn = card?.querySelector('.pdf-open-btn');
+  const previewTrigger = card?.querySelector('.pdf-preview-trigger');
+  const modal = document.getElementById(modalId);
 
-  // Make PDF card trigger clickable
-  if (pdfTrigger) {
-    pdfTrigger.addEventListener('click', () => {
-      pdfOpenBtn?.click();
-    });
+  // Make PDF preview clickable to open modal
+  if (previewTrigger && modal) {
+    const openModal = () => {
+      modal.showModal();
+    };
 
-    pdfTrigger.addEventListener('keydown', (e) => {
+    previewTrigger.addEventListener('click', openModal);
+    previewTrigger.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        pdfOpenBtn?.click();
+        openModal();
       }
     });
   }
